@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Tournament</title>
+<style>
+:root{
+  --bg:#07111f;
+  --panel:#0d1b2d;
+  --panel2:#10243b;
+  --line:rgba(255,255,255,.09);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --accent:#22c55e;
+  --accent2:#16a34a;
+  --gold:#fbbf24;
+  --danger:#fb7185;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(34,197,94,.13),transparent 28%),
+    radial-gradient(circle at 90% 10%,rgba(59,130,246,.13),transparent 30%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
+body:before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;opacity:.035;
+  background-image:linear-gradient(rgba(255,255,255,.7) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.7) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+header{
+  position:relative;
+  overflow:hidden;
+  padding:58px 18px 48px;
+  text-align:center;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(135deg,rgba(8,25,42,.97),rgba(8,38,27,.94)),
+    var(--bg);
+}
+.hero-ball{
+  width:82px;height:82px;margin:0 auto 16px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  font-size:42px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:0 16px 45px rgba(0,0,0,.25);
+}
+header h1{
+  margin:0;
+  font-size:clamp(32px,6vw,56px);
+  letter-spacing:-1.5px;
+}
+header p{margin:10px 0 0;color:#b9c7d8;font-size:15px}
+.live{
+  display:inline-flex;align-items:center;gap:7px;margin-top:20px;
+  padding:7px 12px;border-radius:999px;
+  background:rgba(34,197,94,.11);border:1px solid rgba(34,197,94,.25);
+  color:#86efac;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;
+}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+
+.container{position:relative;max-width:1120px;margin:auto;padding:22px 16px 40px}
+.section{
+  background:linear-gradient(145deg,rgba(13,27,45,.96),rgba(10,24,40,.96));
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+  margin:18px 0;
+  box-shadow:0 18px 55px rgba(0,0,0,.18);
+}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:17px}
+.section-title h2{margin:0;font-size:20px}
+.section-title span{color:var(--muted);font-size:12px}
+
+.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.team{
+  padding:17px 10px;text-align:center;
+  background:linear-gradient(145deg,#10253d,#0b1b2d);
+  border:1px solid var(--line);border-radius:15px;
+  font-weight:800;transition:.2s;
+}
+.team:hover{transform:translateY(-3px);border-color:rgba(34,197,94,.35)}
+.team .badge{
+  width:38px;height:38px;margin:0 auto 9px;border-radius:50%;
+  display:grid;place-items:center;background:rgba(34,197,94,.12);color:#86efac;font-weight:900;
+}
+
+.match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.match{
+  position:relative;padding:17px;
+  border:1px solid var(--line);border-radius:17px;
+  background:linear-gradient(145deg,rgba(16,36,59,.95),rgba(9,25,42,.95));
+  transition:.2s;
+}
+.match:hover{transform:translateY(-2px);border-color:rgba(34,197,94,.3)}
+.match-number{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.match-number b{color:#dbeafe}
+.teams{display:grid;grid-template-columns:1fr 92px 1fr;align-items:center;gap:8px;text-align:center;margin-top:17px}
+.team-name{font-weight:850;font-size:15px}
+.team-name:first-child{text-align:right}
+.team-name:last-child{text-align:left}
+.score{
+  font-size:27px;font-weight:950;letter-spacing:1px;
+  padding:9px 8px;border-radius:13px;
+  background:#071525;border:1px solid rgba(255,255,255,.07);
+}
+.status{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:12px;font-size:11px;font-weight:800}
+.completed{color:#86efac}.upcoming{color:#94a3b8}
+.completed:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:15px}
+table{width:100%;border-collapse:collapse;min-width:680px;background:rgba(6,17,29,.55)}
+th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:center}
+th{background:#09182a;color:#9fb0c4;font-size:11px;text-transform:uppercase;letter-spacing:.7px}
+td{color:#dbe7f5;font-size:13px}
+td:first-child,th:first-child{text-align:left}
+tbody tr{transition:.2s}
+tbody tr:hover{background:rgba(34,197,94,.05)}
+tbody tr:first-child{background:linear-gradient(90deg,rgba(34,197,94,.11),transparent)}
+.rank{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.06);margin-right:8px}
+.rank.gold{background:rgba(251,191,36,.15);color:#fcd34d}
+
+.bracket{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.bracket-box{
+  position:relative;text-align:center;padding:23px 15px;
+  border-radius:17px;border:1px solid var(--line);
+  background:linear-gradient(145deg,#10243a,#0a192b);
+}
+.bracket-box small{display:block;color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:1px;margin-bottom:8px}
+.bracket-box strong{font-size:18px}
+.final-box{border-color:rgba(251,191,36,.25);box-shadow:inset 0 0 35px rgba(251,191,36,.04)}
+.note{
+  padding:15px 16px;border-radius:14px;
+  background:rgba(249,115,22,.08);
+  border:1px solid rgba(249,115,22,.18);
+  color:#fed7aa;line-height:1.7;font-size:13px;
+}
+code{color:#86efac;background:#071525;padding:2px 6px;border-radius:5px}
+footer{padding:25px 15px;color:#64748b;text-align:center;font-size:12px}
+@media(max-width:760px){
+  .team-grid{grid-template-columns:repeat(2,1fr)}
+  .match-grid{grid-template-columns:1fr}
+  .bracket{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  header{padding:42px 15px 36px}
+  .section{padding:16px;border-radius:17px}
+  .teams{grid-template-columns:1fr 78px 1fr}
+  .score{font-size:23px}
+  .team-name{font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="hero-ball">⚽</div>
+  <h1>Football Tournament</h1>
+  <p>League Stage • Semi-Final • Final</p>
+  <div class="live"><i></i> Tournament Dashboard</div>
+</header>
+
+<main class="container">
+
+<!-- ==================== TEAM LIST ==================== -->
+<section class="section">
+  <div class="section-title"><h2>👥 Team List</h2><span>5 Teams</span></div>
+  <div class="team-grid">
+    <div class="team"><div class="badge">A</div>Atik</div>
+    <div class="team"><div class="badge">S</div>Shahib</div>
+    <div class="team"><div class="badge">U</div>Udoy</div>
+    <div class="team"><div class="badge">S</div>Shohag</div>
+    <div class="team"><div class="badge">P</div>Payesh</div>
+  </div>
+</section>
+
+<section class="section">
+    <h2>⚽ T1 Vs T2</h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>Team 1</th>
+                    <th>VS</th>
+                    <th>Team 2</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Match 01</td>
+                    <td>Atik</td>
+                    <td>VS</td>
+                    <td>Payesh</td>
+                </tr>
+
+                <tr>
+                    <td>Match 02</td>
+                    <td>Udoy</td>
+                    <td>VS</td>
+                    <td>Sohag</td>
+                </tr>
+
+                <tr>
+                    <td>Match 03</td>
+                    <td>Shahib</td>
+                    <td>VS</td>
+                    <td>Atik</td>
+                </tr>
+
+                <tr>
+                    <td>Match 04</td>
+                    <td>Udoy</td>
+                    <td>VS</td>
+                    <td>Payesh</td>
+                </tr>
+
+                <tr>
+                    <td>Match 05</td>
+                    <td>Shahib</td>
+                    <td>VS</td>
+                    <td>Sohag</td>
+                </tr>
+
+                <tr>
+                    <td>Match 06</td>
+                    <td>Atik</td>
+                    <td>VS</td>
+                    <td>Udoy</td>
+                </tr>
+
+                <tr>
+                    <td>Match 07</td>
+                    <td>Shahib</td>
+                    <td>VS</td>
+                    <td>Payesh</td>
+                </tr>
+
+                <tr>
+                    <td>Match 08</td>
+                    <td>Atik</td>
+                    <td>VS</td>
+                    <td>Sohag</td>
+                </tr>
+
+                <tr>
+                    <td>Match 09</td>
+                    <td>Shahib</td>
+                    <td>VS</td>
+                    <td>Udoy</td>
+                </tr>
+
+                <tr>
+                    <td>Match 10</td>
+                    <td>Sohag</td>
+                    <td>VS</td>
+                    <td>Payes</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+<!-- =========================================================
+     LEAGUE MATCH LIST
+     ONLY EDIT SCORE HERE
+     ========================================================= -->
+<section class="section">
+  <div class="section-title"><h2>📅 League Match List</h2><span>10 Matches</span></div>
+  <div class="match-grid" id="leagueMatches"></div>
+</section>
+
+
+<!-- =========================================================
+     POINTS TABLE
+     AUTOMATICALLY CALCULATED FROM MATCH SCORES
+     ========================================================= -->
+<section class="section">
+  <div class="section-title"><h2>🏆 Points Table</h2><span>Win = 2 • Draw = 1</span></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GF</th>
+          <th>GA</th>
+          <th>GD</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+
+      <tbody id="pointsTable"></tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ==================== SEMI FINAL ==================== -->
+<section class="section">
+  <div class="section-title"><h2>🥇 Semi-Final</h2><span>Top 4 Teams</span></div>
+
+  <div class="bracket">
+
+    <div class="bracket-box">
+      <small>🥇 Semi-Final 01</small>
+      <strong id="semi1">Team 1 vs Team 3</strong>
+      <p style="color:#94a3b8;font-size:12px;margin-bottom:0">
+        1st Position vs 3rd Position
+      </p>
+    </div>
+
+    <div class="bracket-box">
+      <small>🥈 Semi-Final 02</small>
+      <strong id="semi2">Team 2 vs Team 4</strong>
+      <p style="color:#94a3b8;font-size:12px;margin-bottom:0">
+        2nd Position vs 4th Position
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ==================== FINAL ==================== -->
+<section class="section">
+  <div class="section-title"><h2>🏆 Final</h2><span>Championship Match</span></div>
+
+  <div class="bracket-box final-box">
+    <small>🏆 GRAND FINAL</small>
+    <strong id="finalMatch">Winner of Semi-Final 01 vs Winner of Semi-Final 02</strong>
+    <p style="color:#94a3b8;font-size:12px;margin-bottom:0">
+      🥇 Winner SF-01 vs 🥇 Winner SF-02
+    </p>
+  </div>
+</section>
+
+
+
+
+</main>
+
+<footer>
+  Football Tournament • Public View
+</footer>
+
+
+<script>
+
+/*
+============================================================
+              ⭐ EDIT SCORES HERE ⭐
+============================================================
+
+ONLY CHANGE:
+    score1
+    score2
+    played
+
+Win  = 2 Points
+Draw = 1 Point
+Loss = 0 Point
+
+Example:
+Atik 3 - 1 Payesh
+
+score1: 3,
+score2: 1,
+played: true
+
+If match has NOT happened:
+played: false
+
+============================================================
+*/
+
+const matches = [
+
+  // Match 01
+  {
+    no: 1,
+    team1: "Atik",
+    team2: "Payesh",
+    score1: 4,
+    score2: 2,
+    played: true
+  },
+
+  // Match 02
+  {
+    no: 2,
+    team1: "Udoy",
+    team2: "Shohag",
+    score1: 0,
+    score2: 2,
+    played: true
+  },
+
+  // Match 03
+  {
+    no: 3,
+    team1: "Shahib",
+    team2: "Atik",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 04
+  {
+    no: 4,
+    team1: "Udoy",
+    team2: "Payesh",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 05
+  {
+    no: 5,
+    team1: "Shahib",
+    team2: "Shohag",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 06
+  {
+    no: 6,
+    team1: "Atik",
+    team2: "Udoy",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 07
+  {
+    no: 7,
+    team1: "Shahib",
+    team2: "Payesh",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 08
+  {
+    no: 8,
+    team1: "Atik",
+    team2: "Shohag",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 09
+  {
+    no: 9,
+    team1: "Shahib",
+    team2: "Udoy",
+    score1: 0,
+    score2: 0,
+    played: false
+  },
+
+  // Match 10
+  {
+    no: 10,
+    team1: "Shohag",
+    team2: "Payesh",
+    score1: 0,
+    score2: 0,
+    played: false
+  }
+
+];
+
+
+// ============================================================
+// TEAM LIST
+// ============================================================
+
+const teams = [
+  "Atik",
+  "Shahib",
+  "Udoy",
+  "Shohag",
+  "Payesh"
+];
+
+
+// ============================================================
+// LEAGUE MATCH LIST RENDER
+// ============================================================
+
+function renderMatches(){
+
+  const box = document.getElementById("leagueMatches");
+
+  box.innerHTML = matches.map(match => {
+
+    const score = match.played
+      ? `${match.score1} - ${match.score2}`
+      : "VS";
+
+    const status = match.played
+      ? `<div class="status completed">✓ Match Completed</div>`
+      : `<div class="status upcoming">Upcoming</div>`;
+
+    return `
+      <div class="match">
+
+        <div class="match-number">
+          <span>League Match</span>
+          <b>#${String(match.no).padStart(2,"0")}</b>
+        </div>
+
+        <div class="teams">
+
+          <div class="team-name">
+            ${match.team1}
+          </div>
+
+          <div class="score">
+            ${score}
+          </div>
+
+          <div class="team-name">
+            ${match.team2}
+          </div>
+
+        </div>
+
+        ${status}
+
+      </div>
+    `;
+
+  }).join("");
+
+}
+
+
+// ============================================================
+// CALCULATE POINTS TABLE
+// ============================================================
+
+function calculateTable(){
+
+  const stats = {};
+
+  teams.forEach(team => {
+
+    stats[team] = {
+      team: team,
+      p: 0,
+      w: 0,
+      d: 0,
+      l: 0,
+      gf: 0,
+      ga: 0,
+      gd: 0,
+      pts: 0
+    };
+
+  });
+
+
+  matches.forEach(match => {
+
+    if(!match.played) return;
+
+    const team1 = stats[match.team1];
+    const team2 = stats[match.team2];
+
+    const score1 = Number(match.score1);
+    const score2 = Number(match.score2);
+
+
+    // Played
+    team1.p++;
+    team2.p++;
+
+
+    // Goals
+    team1.gf += score1;
+    team1.ga += score2;
+
+    team2.gf += score2;
+    team2.ga += score1;
+
+
+    // Result
+    if(score1 > score2){
+
+      // Team 1 Win
+      team1.w++;
+      team1.pts += 2;
+
+      team2.l++;
+
+    }
+
+    else if(score2 > score1){
+
+      // Team 2 Win
+      team2.w++;
+      team2.pts += 2;
+
+      team1.l++;
+
+    }
+
+    else{
+
+      // Draw
+      team1.d++;
+      team2.d++;
+
+      team1.pts += 1;
+      team2.pts += 1;
+
+    }
+
+  });
+
+
+  // Goal Difference
+  Object.values(stats).forEach(team => {
+
+    team.gd = team.gf - team.ga;
+
+  });
+
+
+  // Sorting:
+  // Points → Goal Difference → Goals For
+
+  return Object.values(stats).sort((a,b) => {
+
+    return (
+      b.pts - a.pts ||
+      b.gd - a.gd ||
+      b.gf - a.gf
+    );
+
+  });
+
+}
+
+
+// ============================================================
+// RENDER POINTS TABLE
+// ============================================================
+
+function renderTable(){
+
+  const table = document.getElementById("pointsTable");
+
+  const data = calculateTable();
+
+
+  table.innerHTML = data.map((team,index) => {
+
+    return `
+      <tr>
+
+        <td>
+          <span class="rank ${index === 0 ? "gold" : ""}">${index + 1}</span>
+          <b>${team.team}</b>
+        </td>
+
+        <td>${team.p}</td>
+
+        <td>${team.w}</td>
+
+        <td>${team.d}</td>
+
+        <td>${team.l}</td>
+
+        <td>${team.gf}</td>
+
+        <td>${team.ga}</td>
+
+        <td>${team.gd}</td>
+
+        <td>
+          <b>${team.pts}</b>
+        </td>
+
+      </tr>
+    `;
+
+  }).join("");
+
+
+  // ==========================================================
+  // TOP 4 → SEMI FINAL
+  // ==========================================================
+
+  // Semi-final names are intentionally kept as editable placeholders.
+  // Change them manually in the HTML when the qualified teams are known.
+  document.getElementById("semi1").textContent = "Team 1 vs Team 3";
+  document.getElementById("semi2").textContent = "Team 2 vs Team 4";
+
+  // Final placeholder — edit later if needed.
+  document.getElementById("finalMatch").textContent =
+    "Winner of Semi-Final 01 vs Winner of Semi-Final 02";
+
+}
+
+
+// ============================================================
+// START WEBSITE
+// ============================================================
+
+renderMatches();
+renderTable();
+
+</script>
+
+</body>
+</html>
