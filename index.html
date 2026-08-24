@@ -268,33 +268,7 @@ footer{padding:25px 15px;color:#64748b;text-align:center;font-size:12px}
                     <td>Udoy</td>
                 </tr>
 
-                <tr>
-                    <td>Match 07</td>
-                    <td>Shahib</td>
-                    <td>VS</td>
-                    <td>Payesh</td>
-                </tr>
-
-                <tr>
-                    <td>Match 08</td>
-                    <td>Atik</td>
-                    <td>VS</td>
-                    <td>Shohag</td>
-                </tr>
-
-                <tr>
-                    <td>Match 09</td>
-                    <td>Shahib</td>
-                    <td>VS</td>
-                    <td>Udoy</td>
-                </tr>
-
-                <tr>
-                    <td>Match 10</td>
-                    <td>Sohag</td>
-                    <td>VS</td>
-                    <td>Payes</td>
-                </tr>
+              
             </tbody>
         </table>
     </div>
@@ -498,41 +472,6 @@ const matches = [
     time: "05:00 PM"
   },
 
-  // Match 08
-  {
-    no: 8,
-    team1: "Atik",
-    team2: "Shohag",
-    score1: 0,
-    score2: 0,
-    played: false,
-    date: "21 August 2026",
-    time: "05:00 PM"
-  },
-
-  // Match 09
-  {
-    no: 9,
-    team1: "Shahib",
-    team2: "Udoy",
-    score1: 0,
-    score2: 0,
-    played: false,
-    date: "22 August 2026",
-    time: "05:00 PM"
-  },
-
-  // Match 10
-  {
-    no: 10,
-    team1: "Shohag",
-    team2: "Payesh",
-    score1: 0,
-    score2: 0,
-    played: false,
-    date: "23 August 2026",
-    time: "05:00 PM"
-  }
 
 ];
 
@@ -766,8 +705,8 @@ function renderTable(){
   // TOP 4 → SEMI FINAL
   // ==========================================================
 
-  document.getElementById("semi1").textContent = "Team 1 vs Team 3";
-  document.getElementById("semi2").textContent = "Team 2 vs Team 4";
+  document.getElementById("semi1").textContent = "Shahib vs Shohag";
+  document.getElementById("semi2").textContent = "Atik vs Udoy";
 
   // Final placeholder
   document.getElementById("finalMatch").textContent =
